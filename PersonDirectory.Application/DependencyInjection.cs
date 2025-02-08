@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using PersonDirectory.Application.Dtos;
+using PersonDirectory.Application.Validations;
 
 namespace PersonDirectory.Application
 {
@@ -10,6 +13,8 @@ namespace PersonDirectory.Application
             {
                 configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
             });
+
+            services.AddScoped<IValidator<AddPersonRequest>, AddPersonRequestValidator>();
 
             return services;
         }
