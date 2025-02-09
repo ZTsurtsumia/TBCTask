@@ -21,6 +21,7 @@ namespace PersonDirectory.Application.Persons.GetPersonById
 
                 PersonByIdResponse user = new()
                 {
+                    Id = person.Id,
                     FirstName = person.FirstName.Value,
                     LastName = person.LastName.Value,
                     Phones = person.MobilePhones ?? [],
