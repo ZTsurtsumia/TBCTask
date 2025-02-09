@@ -12,33 +12,39 @@ namespace PersonDirectory.Application.Persons.AddPerson
 
         public async Task<Result<int>> Handle(AddPersonCommand request, CancellationToken cancellationToken)
         {
-
-            var connectedPersonIds = request.ConnectedPersons?.Select(cp => cp.ConnectedPersonId).ToList();
-
-            if (connectedPersonIds != null && connectedPersonIds?.Count != 0)
+            try
             {
-                if (!await _personRepository.ConnectedPersonExist(connectedPersonIds))
+                var connectedPersonIds = request.ConnectedPersons?.Select(cp => cp.ConnectedPersonId).ToList();
+
+                if (connectedPersonIds != null && connectedPersonIds?.Count != 0)
                 {
-                    return Result.Failure<int>(PersonErrors.ConnectedPersonNotExist);
+                    if (!await _personRepository.ConnectedPersonExist(connectedPersonIds))
+                    {
+                        return Result.Failure<int>(PersonErrors.ConnectedPersonNotExist);
+                    }
                 }
+
+                var person = Person.CreatePerson(
+                    new FirstName(request.FirstName),
+                    new LastName(request.LastName),
+                    request.Sex,
+                    new PersonalN(request.PersonalN),
+                    new DateOfBirth(request.DateOfBirth),
+                    new City(request.City),
+                    [.. (request.MobilePhones ?? [])],
+                    [.. (request.ConnectedPersons ?? [])]
+                    );
+
+                _personRepository.Add(person);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return Result.Success(person.Id);
             }
-
-            var person = Person.CreatePerson(
-                new FirstName(request.FirstName),
-                new LastName(request.LastName),
-                request.Sex,
-                new PersonalN(request.PersonalN),
-                new DateOfBirth(request.DateOfBirth),
-                new City(request.City),
-                [.. (request.MobilePhones ?? [])],
-                [.. (request.ConnectedPersons ?? [])]
-                );
-
-            _personRepository.Add(person);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Success(person.Id);
+            catch (Exception ex)
+            {
+                return Result.Failure<int>(new Error(ErrorList.General, ex.Message));
+            }
         }
     }
 }

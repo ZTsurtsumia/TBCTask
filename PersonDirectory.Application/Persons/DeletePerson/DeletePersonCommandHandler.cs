@@ -10,17 +10,23 @@ namespace PersonDirectory.Application.Persons.DeletePerson
     {
         public async Task<Result> Handle(DeletePersonCommand request, CancellationToken cancellationToken)
         {
+            try
+            {
+                var person = await personRepository.GetByIdAsync(request.Id, cancellationToken);
+                if (person == null)
+                    return Result.Failure<PersonByIdResponse>(PersonErrors.NotFound);
 
-            var person = await personRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (person == null)
-                return Result.Failure<PersonByIdResponse>(PersonErrors.NotFound);
+                //We wont do that in RealTime
+                personRepository.Delete(person);
 
-            //We wont do that in RealTime
-            personRepository.Delete(person);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Success();
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorList.General, ex.Message));
+            }
         }
     }
 }

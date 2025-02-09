@@ -46,6 +46,8 @@ namespace PersonDirectory.Api
                 app.UseSwaggerUI();
 
                 app.ApplyMigrations();
+
+                app.SeedData();
             }
 
             app.UseHttpsRedirection();

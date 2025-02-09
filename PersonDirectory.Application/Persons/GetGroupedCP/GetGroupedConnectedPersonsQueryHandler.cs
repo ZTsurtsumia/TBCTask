@@ -9,17 +9,24 @@ namespace PersonDirectory.Application.Persons.GetGroupedCP
     {
         public async Task<Result<GetGroupedCPResponse>> Handle(GetGroupedConnectedPersonsQuery request, CancellationToken cancellationToken)
         {
-            var person = await personRepository.GetByIdAsync(request.PersonId, cancellationToken);
-
-            if (person == null)
-                return Result.Failure<GetGroupedCPResponse>(PersonErrors.NotFound);
-
-            var response = new GetGroupedCPResponse
+            try
             {
-                Response = person.GetGroupedConnectedPersons(request.Type)
-            };
+                var person = await personRepository.GetByIdAsync(request.PersonId, cancellationToken);
 
-            return Result.Success(response);
+                if (person == null)
+                    return Result.Failure<GetGroupedCPResponse>(PersonErrors.NotFound);
+
+                var response = new GetGroupedCPResponse
+                {
+                    Response = person.GetGroupedConnectedPersons(request.Type)
+                };
+
+                return Result.Success(response);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<GetGroupedCPResponse>(new Error(ErrorList.General, ex.Message));
+            }
         }
     }
 }

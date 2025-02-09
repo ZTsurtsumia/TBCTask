@@ -10,38 +10,46 @@ internal class UpdatePictureCommandHandler(IPersonRepository personRepository, I
 {
     public async Task<Result> Handle(UpdatePictureCommand request, CancellationToken cancellationToken)
     {
-        var person = await personRepository.GetByIdAsync(request.Id, cancellationToken);
-        if (person == null)
-            return Result.Failure<GetGroupedCPResponse>(PersonErrors.NotFound);
-
-        if (request.FileData == null || request.FileData.Length == 0)
+        try
         {
-            return Result.Failure(new Error(ErrorList.General, "No File Provided"));
+            var person = await personRepository.GetByIdAsync(request.Id, cancellationToken);
+            if (person == null)
+                return Result.Failure<GetGroupedCPResponse>(PersonErrors.NotFound);
+
+            if (request.FileData == null || request.FileData.Length == 0)
+            {
+                return Result.Failure(new Error(ErrorList.General, "No File Provided"));
+            }
+            string _pictureFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Pictures");
+            if (!Directory.Exists(_pictureFolderPath))
+            {
+                Directory.CreateDirectory(_pictureFolderPath);
+            }
+
+            if (!string.IsNullOrWhiteSpace(person?.Picture?.Value))
+            {
+                File.Delete(person.Picture.Value);
+            }
+
+            string fileName = $"{DateTime.Now.ToFileTime()}_{person?.Id}";
+            string filePath = Path.Combine(_pictureFolderPath, fileName);
+
+
+            await File.WriteAllBytesAsync(filePath, request.FileData, cancellationToken);
+
+            person?.UpdatePicture(
+                    new Picture(filePath)
+                );
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
         }
-        string _pictureFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Pictures");
-        if (!Directory.Exists(_pictureFolderPath))
+        catch (Exception ex)
         {
-            Directory.CreateDirectory(_pictureFolderPath);
+
+            return Result.Failure(new Error(ErrorList.General, ex.Message));
         }
-
-        if (!string.IsNullOrWhiteSpace(person?.Picture?.Value))
-        {
-            File.Delete(person.Picture.Value);
-        }
-
-        string fileName = $"{DateTime.Now}-{person?.Id}";
-        string filePath = Path.Combine(_pictureFolderPath, fileName);
-
-
-        await File.WriteAllBytesAsync(filePath, request.FileData, cancellationToken);
-
-        person?.UpdatePicture(
-                new Picture(filePath)
-            );
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return Result.Success();
 
     }
 }

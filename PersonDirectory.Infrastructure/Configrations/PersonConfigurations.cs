@@ -10,7 +10,7 @@ namespace PersonDirectory.Infrastructure.Configrations
     {
         public void Configure(EntityTypeBuilder<Person> builder)
         {
-            builder.ToTable("dbo.Persons");
+            builder.ToTable("Persons", "dbo");
 
             var mobileNumbersConverter = new ValueConverter<List<MobilePhone>, string>(
                 v => JsonConvert.SerializeObject(v ?? new List<MobilePhone>()),
