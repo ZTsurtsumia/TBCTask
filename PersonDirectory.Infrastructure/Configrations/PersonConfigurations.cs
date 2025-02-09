@@ -27,13 +27,13 @@ namespace PersonDirectory.Infrastructure.Configrations
             builder.OwnsOne(p => p.FirstName, fn =>
             {
                 fn.Property(f => f.Value).HasColumnName(nameof(FirstName))
-                    .HasMaxLength(200);
+                    .HasMaxLength(50);
             });
 
             builder.OwnsOne(p => p.LastName, ln =>
             {
                 ln.Property(l => l.Value).HasColumnName(nameof(LastName))
-                    .HasMaxLength(200);
+                    .HasMaxLength(50);
             });
 
             builder.OwnsOne(p => p.City, city =>
@@ -59,7 +59,7 @@ namespace PersonDirectory.Infrastructure.Configrations
             builder.OwnsOne(p => p.PersonalN, personalN =>
             {
                 personalN.Property(pn => pn.Value).HasColumnName(nameof(PersonalN))
-                    .HasMaxLength(200);
+                    .HasMaxLength(11);
             });
 
             builder.OwnsOne(p => p.Picture, picture =>

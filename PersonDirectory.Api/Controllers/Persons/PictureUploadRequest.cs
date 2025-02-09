@@ -3,7 +3,7 @@
     public class PictureUploadRequest
     {
         public int PersonId { get; set; }
-        public IFormFile Picture { get; set; }
+        public required IFormFile Picture { get; set; }
 
     }
 }

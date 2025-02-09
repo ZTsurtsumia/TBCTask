@@ -16,7 +16,7 @@ internal class UpdatePictureCommandHandler(IPersonRepository personRepository, I
 
         if (request.FileData == null || request.FileData.Length == 0)
         {
-            return Result.Failure(new Error(Domain.Errors.ErrorList.General, "No File Provided"));
+            return Result.Failure(new Error(ErrorList.General, "No File Provided"));
         }
         string _pictureFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Pictures");
         if (!Directory.Exists(_pictureFolderPath))
@@ -24,16 +24,18 @@ internal class UpdatePictureCommandHandler(IPersonRepository personRepository, I
             Directory.CreateDirectory(_pictureFolderPath);
         }
 
-        if (!string.IsNullOrWhiteSpace(person.Picture.Value))
+        if (!string.IsNullOrWhiteSpace(person?.Picture?.Value))
         {
             File.Delete(person.Picture.Value);
         }
 
-        string filePath = Path.Combine(_pictureFolderPath, request.FileName);
+        string fileName = $"{DateTime.Now}-{person?.Id}";
+        string filePath = Path.Combine(_pictureFolderPath, fileName);
+
 
         await File.WriteAllBytesAsync(filePath, request.FileData, cancellationToken);
 
-        person.UpdatePicture(
+        person?.UpdatePicture(
                 new Picture(filePath)
             );
 
