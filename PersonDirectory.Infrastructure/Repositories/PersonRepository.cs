@@ -5,7 +5,7 @@ namespace PersonDirectory.Infrastructure.Repositories
 {
     public class PersonRepository(ApplicationDbContext dbContext) : Repository<Person>(dbContext), IPersonRepository
     {
-        public async Task<bool> ConnectedPersonExist(List<int> ids)
+        public async Task<bool> ConnectedPersonExist(List<int>? ids)
         {
             if (ids == null || ids.Count == 0)
                 return false;

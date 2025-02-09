@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PersonDirectory.Api.Extensions;
 using PersonDirectory.Api.Filters;
 using PersonDirectory.Application.Dtos;
 using PersonDirectory.Application.Persons.AddPerson;
@@ -24,11 +25,7 @@ namespace PersonDirectory.Api.Controllers.Persons
             var query = new GetPersonByIdQuery(id);
             var result = await sender.Send(query, cancellationToken);
 
-            if (result.IsSuccess)
-            {
-                return Ok(SuccessResponse(result.Value));
-            }
-            return NotFound();
+            return result.IsSuccess ? Ok(SuccessResponse(result.Value)) : result.Error.HandleError();
         }
 
         [HttpPost]
@@ -51,7 +48,7 @@ namespace PersonDirectory.Api.Controllers.Persons
 
             var result = await sender.Send(command, cancellationToken);
 
-            return Ok(SuccessResponse(result.Value));
+            return result.IsSuccess ? Ok(SuccessResponse(result.Value)) : result.Error.HandleError();
 
         }
 
@@ -73,7 +70,8 @@ namespace PersonDirectory.Api.Controllers.Persons
 
             var result = await sender.Send(command, cancellationToken);
 
-            return Ok(result);
+            return result.IsSuccess ? Ok() : result.Error.HandleError();
+
         }
 
         [HttpPut("picture")]
@@ -92,7 +90,8 @@ namespace PersonDirectory.Api.Controllers.Persons
             var command = new UpdatePictureCommand(request.PersonId, fileData, fileName);
             var result = await sender.Send(command, cancellationToken);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result.Error.Code);
+            return result.IsSuccess ? Ok() : result.Error.HandleError();
+
         }
 
         [HttpGet("connectedPersonsReport")]
@@ -106,7 +105,8 @@ namespace PersonDirectory.Api.Controllers.Persons
 
             var result = await sender.Send(query, cancellationToken);
 
-            return Ok(result.Value);
+            return result.IsSuccess ? Ok(SuccessResponse(result.Value)) : result.Error.HandleError();
+
         }
 
         [HttpDelete]
@@ -115,8 +115,7 @@ namespace PersonDirectory.Api.Controllers.Persons
             var command = new DeletePersonCommand(id);
             var result = await sender.Send(command, cancellationToken);
 
-            return Ok();
-
+            return result.IsSuccess ? Ok() : result.Error.HandleError();
         }
 
         [HttpGet("search")]
@@ -137,13 +136,13 @@ namespace PersonDirectory.Api.Controllers.Persons
             var result = await sender.Send(query, cancellationToken);
 
 
-            return Ok(new
+            return result.IsSuccess ? Ok(new
             {
                 TotalCount = result.Value.Count,
                 request.Page,
                 request.PageSize,
                 Data = result.Value.Person
-            });
+            }) : result.Error.HandleError();
         }
 
         [HttpPut("connectedPersons")]
@@ -152,7 +151,8 @@ namespace PersonDirectory.Api.Controllers.Persons
             var command = new UpdateConnectedPersonsCommand(request.PersonId, request.ConnectedPeople.MoveToDomain());
 
             var result = await sender.Send(command, cancellationToken);
-            return Ok();
+            return result.IsSuccess ? Ok() : result.Error.HandleError();
+
         }
     }
 }
