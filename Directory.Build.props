@@ -1,0 +1,9 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Specify to suppress specific warnings -->
+  <PropertyGroup>
+    <!-- Suppress the specified warnings across the solution -->
+    <NoWarn>CS9107;CS8613;CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>

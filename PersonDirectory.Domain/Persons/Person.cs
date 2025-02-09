@@ -14,7 +14,9 @@ namespace PersonDirectory.Domain.Persons
         public Picture? Picture { get; private set; }
         public List<ConnectedPerson>? ConnectedPersons { get; private set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         private Person()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         {
 
         }

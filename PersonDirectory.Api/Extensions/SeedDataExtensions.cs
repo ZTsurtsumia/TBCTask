@@ -96,6 +96,7 @@ internal static class SeedDataExtensions
 
 public class AddPersonModel
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public Sex Sex { get; set; }
@@ -104,6 +105,7 @@ public class AddPersonModel
     public string City { get; set; }
     public string MobilePhones { get; set; } // Store MobilePhones as a JSON string
     public string ConnectedPersons { get; set; } // JSON String
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 }
 
 public class CP

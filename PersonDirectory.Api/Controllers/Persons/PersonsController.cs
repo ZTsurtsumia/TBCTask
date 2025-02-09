@@ -19,7 +19,7 @@ namespace PersonDirectory.Api.Controllers.Persons
     [Route("api/[controller]")]
     public class PersonsController(ISender sender) : ApiControllerBase
     {
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
             var query = new GetPersonByIdQuery(id);
