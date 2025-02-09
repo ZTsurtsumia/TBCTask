@@ -2,6 +2,7 @@ using PersonDirectory.Api.Extensions;
 using PersonDirectory.Api.Filters;
 using PersonDirectory.Application;
 using PersonDirectory.Infrastructure;
+using Serilog;
 
 namespace PersonDirectory.Api
 {
@@ -11,6 +12,8 @@ namespace PersonDirectory.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Host.UseSerilog((context, loggerConfig) =>
+            loggerConfig.ReadFrom.Configuration(context.Configuration));
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -31,6 +34,8 @@ namespace PersonDirectory.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging();
 
             app.UseCustomExceptionHandler();
 
